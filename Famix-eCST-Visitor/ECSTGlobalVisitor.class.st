@@ -35,6 +35,18 @@ ECSTGlobalVisitor >> ensurePackages: names in: anOwner [
 	^self ensurePackages: names allButFirst in: package
 ]
 
+{ #category : #'as yet unclassified' }
+ECSTGlobalVisitor >> ensureUnitInPackage: names [
+	| eCSTPackage eCSTunit |
+	names size > 1
+		ifTrue: [ eCSTPackage := self ensurePackages: names allButLast ].
+	^eCSTunit := FamixECSTUnit new
+		name: names last;
+		mooseModel: eCSTFamixModel;
+		parentPackage: eCSTPackage;
+		yourself
+]
+
 { #category : #accessing }
 ECSTGlobalVisitor >> initialize [
 	super initialize .
@@ -258,6 +270,16 @@ ECSTGlobalVisitor >> visitECSTToken:anElement [
 ]
 
 { #category : #'as yet unclassified' }
+ECSTGlobalVisitor >> visitECSTUnitDecl: anElement [
+	| names eCSTUnit functions |
+	names := self visitECSTNAME: (finder find: 'NAME' in: anElement).
+	eCSTUnit := self ensureUnitInPackage: names.
+	functions := self finder findAll: 'FUNCTION_DECL' in: anElement.
+	functions do: [ :each | self visitECSTFUNCTION_DECL: each ].
+	^ eCSTUnit
+]
+
+{ #category : #'as yet unclassified' }
 ECSTGlobalVisitor >> visitECSTVALUE:anElement [
 	self flag: 'Should Implement !!!'.
 
@@ -274,4 +296,15 @@ ECSTGlobalVisitor >> visitElement: aNode [
 	aNode isElement ifFalse:[ ^self].		
 	( aNode name = 'token') ifTrue: [self visitECSTToken: aNode]. 
 	( aNode name = 'childElement') ifTrue: [self visitECSTChildElement: aNode]
+]
+
+{ #category : #'as yet unclassified' }
+ECSTGlobalVisitor >> visitRootNode:anElement for:aString [
+	| nameNode |
+	nameNode := self finder
+		find: 'NAME'
+		in: self subTreeVisitor rootElement.
+	^self visitECSTNAME: (self finder find: 'NAME' in: nameNode).
+	
+	
 ]

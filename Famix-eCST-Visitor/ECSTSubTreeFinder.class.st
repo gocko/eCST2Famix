@@ -26,6 +26,24 @@ ECSTSubTreeFinder >> find: aString in: anXMLTree [
 	^ self findIn: anXMLTree
 ]
 
+{ #category : #private }
+ECSTSubTreeFinder >> findAll: aString in: anElement [
+	
+	condition := aString.
+	^anElement nodes collect: [ :each | self findIn: each ]
+]
+
+{ #category : #private }
+ECSTSubTreeFinder >> findAny: strings in: anXMLTree [
+	strings
+		do: [ :each | 
+			| result |
+			condition := each.
+			result := self findIn: anXMLTree.
+			result isElement ifTrue: [ ^result ]].
+		^ XMLNilNode new
+]
+
 { #category : #visiting }
 ECSTSubTreeFinder >> findIn: aNode [
 	self flag: 'refactor here!'.

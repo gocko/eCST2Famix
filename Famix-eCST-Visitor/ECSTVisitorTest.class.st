@@ -24,6 +24,16 @@ ECSTVisitorTest >> testVisitDocument [
 ]
 
 { #category : #running }
+ECSTVisitorTest >> testVisitECSTFUNCTION_DECL [
+	| functionNames |
+	
+	functionNames := (visitor eCSTFamixModel allWithType: FamixECSTFuncion )
+		collect: [ :each | each name ].
+	self assert: functionNames size equals: 2.
+	self assertCollection: functionNames includesAll: {'main'.'randomEtat'}
+]
+
+{ #category : #running }
 ECSTVisitorTest >> testVisitECSTPACKAGE_DECL [
 	| packageNames |
 	self assert: visitor eCSTFamixModel class equals: FamixECSTModel.
@@ -33,6 +43,16 @@ ECSTVisitorTest >> testVisitECSTPACKAGE_DECL [
 				ifTrue: [ each name ] ].
 	self assert: packageNames size equals: 2.
 	self assertCollection: packageNames includesAll: {'dp' . 'tp_parking' }
+]
+
+{ #category : #running }
+ECSTVisitorTest >> testVisitUnit [
+	| unitNames units |
+	units := visitor eCSTFamixModel allWithType: FamixECSTUnit.
+	unitNames := units collect: [ :each | each name ].
+	self assert: unitNames size equals: 1.
+	self assert: units first parentPackage name equals: 'dp'.
+	self assertCollection: unitNames includesAll: {'Main'}
 ]
 
 { #category : #accessing }

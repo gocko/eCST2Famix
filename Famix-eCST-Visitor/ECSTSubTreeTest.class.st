@@ -19,6 +19,19 @@ ECSTSubTreeTest >> setUp [
 ]
 
 { #category : #tests }
+ECSTSubTreeTest >> testFindAnyIn [
+	| theNode thePackageNode |
+	thePackageNode := self visitor finder
+		find: 'PACKAGE_DECL'
+		in: self visitor rootElement firstElement.
+	theNode := self visitor finder 
+		findAny: { 'CONCRETE_UNIT_DECL'.'INTERFACE_UNIT_DECL' } in: thePackageNode . 
+	self
+		assert: (theNode firstElement attributeAt: 'text') asString
+		equals: 'CONCRETE_UNIT_DECL'
+]
+
+{ #category : #tests }
 ECSTSubTreeTest >> testFindIn [
 	| theNode |
 	theNode := finder find: 'PACKAGE_DECL' in: self visitor rootElement firstElement .
